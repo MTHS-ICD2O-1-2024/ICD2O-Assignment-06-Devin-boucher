@@ -4,33 +4,44 @@
 // Created on: April 2025
 // This file contains the JS functions for index.html
 
+// Copyright (c) 2020 Mr. Coxall All rights reserved
+//
+// Created by: Devin Boucher
+// Created on: April 2025
+// This file contains the JS functions for index.html
+
 'use strict'
 
-async function getAnimeFact() {
+/**
+ * Get API info.
+ */
+const getNekoImage = async (URLAddress) => {
   try {
-    // Show loading message
-    document.getElementById('anime-name').innerHTML = 'Loading...'
-    document.getElementById('anime-fact').innerHTML = ''
+    const result = await fetch(URLAddress)
+    const jsonData = await result.json()
+    console.log(jsonData)
 
-    // API url for Black Clover facts
-    const url = 'https://anime-facts-rest-api.herokuapp.com/api/v1/black_clover'
+    // Access the first item inside the 'results' array
+    const neko = jsonData.results[0]
 
-    // Fetch data from API
-    const response = await fetch(url)
-    const data = await response.json()
+    document.getElementById("api-image").innerHTML =
+      '<img src="' + neko.url + '" alt="API image" class="center">'
 
-    // Pick a random fact from the data array
-    const facts = data.data
-    const randomIndex = Math.floor(Math.random() * facts.length)
-    const fact = facts[randomIndex].fact
-
-    // Show fact on the page
-    document.getElementById('anime-name').innerHTML = 'Anime: Black Clover'
-    document.getElementById('anime-fact').innerHTML = 'Fact: ' + fact
-  } catch (error) {
-    // Log error and show simple message
-    console.error(error)
-    document.getElementById('anime-name').innerHTML = 'Error getting fact.'
-    document.getElementById('anime-fact').innerHTML = ''
+    if (neko.artist_href != null && neko.artist_href !== "") {
+      document.getElementById("image-artist").innerHTML =
+        "<p>Artist: " +
+        '<a href="' +
+        neko.artist_href +
+        '" target="_blank">' +
+        neko.artist_name +
+        "</a></p>"
+    } else {
+      document.getElementById("image-artist").innerHTML =
+        "<p>Artist: unknown</p>"
+    }
+  } catch (err) {
+    console.log(err)
   }
 }
+
+getNekoImage("https://nekos.best/api/v2/neko")
